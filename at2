@@ -1,0 +1,227 @@
+clc;
+clear;
+close all;
+
+%% Simulation of Functional Split in 5G RAN
+
+% Functional split options
+splits = {'Split 2', 'Split 6', 'Split 7.2'};
+
+% Processing delay in milliseconds
+processing_delay = [1.2 2.5 4.0];
+
+% Fronthaul load in Gbps
+fronthaul_load = [0.5 2.5 8.0];
+
+% Maximum throughput in Gbps
+throughput = [1.5 3.5 8.0];
+
+% Fronthaul transmission delay in milliseconds
+fronthaul_delay = [0.8 0.5 0.2];
+
+% Total latency calculation
+total_latency = processing_delay + fronthaul_delay;
+
+% Energy consumption in Watts
+energy_consumption = [180 140 110];
+
+%% Display simulation results
+
+Results = table(splits', processing_delay', fronthaul_load', ...
+    throughput', total_latency', energy_consumption', ...
+    'VariableNames', {'Functional_Split', ...
+    'Processing_Delay_ms', ...
+    'Fronthaul_Load_Gbps', ...
+    'Throughput_Gbps', ...
+    'Total_Latency_ms', ...
+    'Energy_Consumption_W'});
+
+disp('SIMULATION RESULTS');
+disp(Results);
+
+%% Figure 1: Processing Delay
+
+figure;
+
+bar(processing_delay);
+
+set(gca, 'XTickLabel', splits);
+
+xlabel('Functional Split');
+ylabel('Processing Delay (ms)');
+
+title('Processing Delay for Different 5G RAN Functional Splits');
+
+grid on;
+
+%% Figure 2: Fronthaul Load
+
+figure;
+
+bar(fronthaul_load);
+
+set(gca, 'XTickLabel', splits);
+
+xlabel('Functional Split');
+ylabel('Fronthaul Load (Gbps)');
+
+title('Fronthaul Load for Different 5G RAN Functional Splits');
+
+grid on;
+
+%% Figure 3: Throughput
+
+figure;
+
+bar(throughput);
+
+set(gca, 'XTickLabel', splits);
+
+xlabel('Functional Split');
+ylabel('Throughput (Gbps)');
+
+title('Throughput Performance of 5G RAN Functional Splits');
+
+grid on;
+
+%% Figure 4: Total Latency
+
+figure;
+
+bar(total_latency);
+
+set(gca, 'XTickLabel', splits);
+
+xlabel('Functional Split');
+ylabel('Total Latency (ms)');
+
+title('Total Latency for Different 5G RAN Functional Splits');
+
+grid on;
+
+%% Figure 5: Energy Consumption
+
+figure;
+
+bar(energy_consumption);
+
+set(gca, 'XTickLabel', splits);
+
+xlabel('Functional Split');
+ylabel('Energy Consumption (W)');
+
+title('Energy Consumption of 5G RAN Functional Splits');
+
+grid on;
+
+%% Combined Performance Comparison
+
+figure;
+
+subplot(2,3,1);
+
+bar(processing_delay);
+
+set(gca, 'XTickLabel', splits);
+
+title('Processing Delay');
+
+ylabel('ms');
+
+grid on;
+
+subplot(2,3,2);
+
+bar(fronthaul_load);
+
+set(gca, 'XTickLabel', splits);
+
+title('Fronthaul Load');
+
+ylabel('Gbps');
+
+grid on;
+
+subplot(2,3,3);
+
+bar(throughput);
+
+set(gca, 'XTickLabel', splits);
+
+title('Throughput');
+
+ylabel('Gbps');
+
+grid on;
+
+subplot(2,3,4);
+
+bar(total_latency);
+
+set(gca, 'XTickLabel', splits);
+
+title('Total Latency');
+
+ylabel('ms');
+
+grid on;
+
+subplot(2,3,5);
+
+bar(energy_consumption);
+
+set(gca, 'XTickLabel', splits);
+
+title('Energy Consumption');
+
+ylabel('Watts');
+
+grid on;
+
+sgtitle('Performance Comparison of 5G RAN Functional Splits');
+
+%% Performance Index Calculation
+
+% Normalization of parameters
+
+delay_score = 1 - processing_delay/max(processing_delay);
+
+load_score = 1 - fronthaul_load/max(fronthaul_load);
+
+throughput_score = throughput/max(throughput);
+
+latency_score = 1 - total_latency/max(total_latency);
+
+energy_score = 1 - energy_consumption/max(energy_consumption);
+
+% Overall performance index
+
+performance_index = 0.20*delay_score + ...
+                    0.20*load_score + ...
+                    0.25*throughput_score + ...
+                    0.20*latency_score + ...
+                    0.15*energy_score;
+
+%% Performance Index Plot
+
+figure;
+
+bar(performance_index);
+
+set(gca, 'XTickLabel', splits);
+
+xlabel('Functional Split');
+
+ylabel('Performance Index');
+
+title('Overall Performance Index of 5G RAN Functional Splits');
+
+grid on;
+
+%% Find the Best Functional Split
+
+[best_value, best_index] = max(performance_index);
+
+fprintf('\nBest Functional Split: %s\n', splits{best_index});
+
+fprintf('Performance Index: %.3f\n', best_value);
