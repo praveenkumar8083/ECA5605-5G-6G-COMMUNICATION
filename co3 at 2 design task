@@ -1,0 +1,89 @@
+clc;
+clear;
+close all;
+
+%% Simulation Parameters
+N = 100;                     % Number of users
+distance = linspace(1,1000,N); % Distance (km)
+
+% Terrestrial Network Parameters
+terr_bw = 100;        % Bandwidth (MHz)
+terr_speed = 3e8;     % Speed of signal (m/s)
+terr_power = 2;        % Power (W)
+
+% Satellite Network Parameters
+sat_bw = 50;           % Bandwidth (MHz)
+sat_altitude = 550;    % LEO Satellite altitude (km)
+sat_speed = 3e8;
+sat_power = 5;
+
+%% Latency Calculation
+terr_latency = (distance*1000)/terr_speed *1000;      % ms
+sat_latency = ((sat_altitude+distance)*1000)/sat_speed*1000;
+
+hybrid_latency = min(terr_latency,sat_latency);
+
+%% Throughput Calculation
+snr = 20;   % dB
+snr_linear = 10^(snr/10);
+
+terr_throughput = terr_bw*log2(1+snr_linear);
+sat_throughput  = sat_bw*log2(1+snr_linear);
+
+hybrid_throughput = max(terr_throughput,sat_throughput);
+
+%% Packet Delivery Ratio
+terr_pdr = 98 - 0.005*distance;
+sat_pdr  = 95 - 0.003*distance;
+hybrid_pdr = max(terr_pdr,sat_pdr);
+
+%% Energy Consumption
+terr_energy = terr_power * terr_latency;
+sat_energy  = sat_power * sat_latency;
+hybrid_energy = min(terr_energy,sat_energy);
+
+%% Plot Results
+
+figure;
+
+subplot(2,2,1)
+plot(distance,terr_latency,'b','LineWidth',2); hold on;
+plot(distance,sat_latency,'r','LineWidth',2);
+plot(distance,hybrid_latency,'k','LineWidth',2);
+grid on;
+xlabel('Distance (km)');
+ylabel('Latency (ms)');
+title('Latency Comparison');
+legend('Terrestrial','Satellite','Hybrid');
+
+subplot(2,2,2)
+plot(distance,terr_throughput*ones(1,N),'b','LineWidth',2); hold on;
+plot(distance,sat_throughput*ones(1,N),'r','LineWidth',2);
+plot(distance,hybrid_throughput*ones(1,N),'k','LineWidth',2);
+grid on;
+xlabel('Distance (km)');
+ylabel('Throughput (Mbps)');
+title('Throughput Comparison');
+legend('Terrestrial','Satellite','Hybrid');
+
+subplot(2,2,3)
+plot(distance,terr_pdr,'b','LineWidth',2); hold on;
+plot(distance,sat_pdr,'r','LineWidth',2);
+plot(distance,hybrid_pdr,'k','LineWidth',2);
+grid on;
+xlabel('Distance (km)');
+ylabel('Packet Delivery Ratio (%)');
+title('PDR Comparison');
+legend('Terrestrial','Satellite','Hybrid');
+
+subplot(2,2,4)
+plot(distance,terr_energy,'b','LineWidth',2); hold on;
+plot(distance,sat_energy,'r','LineWidth',2);
+plot(distance,hybrid_energy,'k','LineWidth',2);
+grid on;
+xlabel('Distance (km)');
+ylabel('Energy Consumption');
+title('Energy Comparison');
+legend('Terrestrial','Satellite','Hybrid');
+
+sgtitle('Integrated Terrestrial and Satellite Communication Architecture');
